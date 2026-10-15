@@ -42,6 +42,6 @@ export function SectionTitle({ title, sub, right }: { title: string; sub?: strin
 export function Logo({ className }: { className?: string }) {
   return <Link href="/" className={cn("flex items-center gap-2", className)} aria-label="SoviTrade home">
     <img src="/brand/sovitrade-icon-shield.svg" alt="" className="h-8 w-8" />
-    <span className="hidden font-display text-lg sm:inline font-bold tracking-tight">Sovi<span className="text-brand">Trade</span></span>
+    <span className="font-display text-lg font-bold tracking-tight">Sovi<span className="text-brand">Trade</span></span>
   </Link>;
 }

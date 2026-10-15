@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, Card } from "./ui";
 
 export function GeoNotice() {
@@ -12,15 +13,19 @@ export function RiskDisclaimer({ compact, className }: { compact?: boolean; clas
     Nothing on SoviTrade is investment, legal or tax advice. Past performance is not indicative of future results. You can lose money. Bots can fail. Keep your keys.
   </p>;
 }
-export function LaunchGate({ children, className }: { children: React.ReactNode; className?: string }) {
+export function LaunchGate({ children, className, href = "/app" }: { children: React.ReactNode; className?: string; href?: string }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   return <>
-    <button className={className} onClick={() => setOpen(true)}>{children}</button>
-    {open && <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setOpen(false)}>
+    <button type="button" className={className} onClick={() => setOpen(true)}>{children}</button>
+    {open && <div className="fixed inset-0 z-50 grid place-items-center bg-void/80 p-4" onClick={() => setOpen(false)}>
       <Card className="max-w-md" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-lg font-bold">Restricted jurisdictions</h3>
-        <p className="mt-2 text-sm text-muted">SoviTrade is not available to US persons or residents of the UK, Canada, Australia, Switzerland or sanctioned regions.</p>
-        <div className="mt-4 flex gap-2"><Button onClick={() => setOpen(false)}>I understand</Button></div>
+        <h3 className="text-lg font-bold">Before you continue</h3>
+        <p className="mt-2 text-sm text-muted">SoviTrade is not available to US persons or residents of the UK, Canada, Australia, Switzerland or sanctioned regions. Tokenised stocks are not the shares themselves.</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button onClick={() => router.push(href)}>I am not in a restricted region</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>Close</Button>
+        </div>
       </Card>
     </div>}
   </>;

@@ -27,6 +27,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; }
 .text-brand { background-image: linear-gradient(135deg,#7B5CFF 0%,#4F6BFF 55%,#2DE2C7 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .border-brand { border: 1px solid transparent; background: linear-gradient(var(--color-surface),var(--color-surface)) padding-box, linear-gradient(135deg,#7B5CFF,#4F6BFF 55%,#2DE2C7) border-box; }
 *:focus-visible { outline: 2px solid var(--color-violet); outline-offset: 2px; }
+button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 .animate-ticker { animation: ticker 40s linear infinite; }
 @media (prefers-reduced-motion: reduce) { .animate-ticker { animation: none; } * { transition: none !important; } }

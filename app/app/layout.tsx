@@ -8,8 +8,8 @@ const grotesk = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], vari
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
-  title: "SoviTrade: Your keys. Your limits. Always on.",
-  description: "Non-custodial auto-trading for tokenised US stocks & ETFs on Solana.",
+  title: "SoviTrade — A capped DCA bot for tokenized stocks",
+  description: "Schedule USDC buys of tokenized US stocks on Solana. Your wallet holds the tokens. The session key has a spend cap, a clock, and a program allow-list. Dry-run by default.",
   icons: { icon: "/brand/sovitrade-icon-shield.svg" },
 };
 

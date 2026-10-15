@@ -1,0 +1,17 @@
+# Sovereign Mode keeper. Dry-run is on until you set KEEPER_DRY_RUN = "false".
+# Do not put private keys in this file.
+#   npx wrangler secret put SESSION_KEY_MATERIAL
+#   npx wrangler secret put JUPITER_API_KEY
+# SESSION_KEY_MATERIAL is JSON: { "<session pubkey>": "<base64 secret>" }
+name = "sovitrade-keeper"
+main = "workers/keeper/src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+KEEPER_DRY_RUN = "true"
+# BOTS_JSON = "[]"
+# SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"

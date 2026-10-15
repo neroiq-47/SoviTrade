@@ -1,6 +1,7 @@
-import { Bot, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { StrategyDiagram } from "@/components/charts";
-import { Button, Card, EmptyState, Pill, SectionTitle } from "@/components/ui";
+import { RosterCard } from "@/components/bot-roster";
+import { Button, Card, Pill, SectionTitle } from "@/components/ui";
 import { STRATEGIES } from "@/lib/config";
 
 export default function Bots() {
@@ -13,6 +14,6 @@ export default function Bots() {
       <div className="mt-3"><StrategyDiagram id={s.id} className="h-16 w-full" /></div>
       {s.id === "grid" || s.id === "trend" ? <Button variant="secondary" className="mt-auto" disabled>Coming soon</Button> : <Button href={`/app/bots/new?strategy=${s.id}`} variant="secondary" className="mt-auto">Use template</Button>}
     </Card>)}</div>
-    <Card><SectionTitle title="Your bots" /><EmptyState icon={Bot} title="No bots yet. Create one" body="Pick a template above or start from scratch. Your bots will show status, P&L and limit usage here." action={<Button href="/app/bots/new"><Plus size={16} />Create your first bot</Button>} /></Card>
+    <RosterCard />
   </div>;
 }

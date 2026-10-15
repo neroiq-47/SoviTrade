@@ -46,4 +46,10 @@ export const STRATEGIES: { id: StrategyId; name: string; blurb: string; fit: str
 
 export const PASSES = [
   { id: "scout", name: "Scout", days: 30, price: 29, perMonth: "$29/mo", bots: 2, strategies: "DCA, Rebalance (≤2 assets)", backtests: "10/day · 6-month history", alerts: "Email / in-app", priority: "Standard" },
-];
+  { id: "pilot", name: "Pilot", days: 90, price: 69, perMonth: "≈$23/mo (−21%)", bots: 6, strategies: "All 4", backtests: "50/day · 2 years", alerts: "+ Telegram / Discord", priority: "Priority fee “High”", popular: true },
+  { id: "sovereign", name: "Sovereign", days: 365, price: 199, perMonth: "≈$16.6/mo (−43%)", bots: 20, strategies: "All 4 + advanced params", backtests: "Unlimited · CSV export", alerts: "+ webhooks", priority: "“VeryHigh” + dedicated lane" },
+] as const;
+
+export const BLOCKED_REGIONS = ["United States", "United Kingdom", "Canada", "Australia", "Switzerland", "OFAC/UN-sanctioned & occupied regions"];
+export const SOL_MINT = "So11111111111111111111111111111111111111112";
+export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";

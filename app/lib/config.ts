@@ -1,8 +1,9 @@
 /**
  * Static product & reference configuration (not market data).
  * Live data comes from lib/server/* (Jupiter, Pyth, GeckoTerminal, Solana RPC).
+ * 2026 update: Securitize Stocks launched on Solana (Oct 2026); Chainlink Tokenized Equity Feeds available.
  */
-export type IssuerId = "xstocks" | "ondo" | "backpack";
+export type IssuerId = "xstocks" | "ondo" | "backpack" | "securitize";
 
 /** Curated underlying allow-list. Listings per issuer are discovered live from the Jupiter Token API. */
 export const UNDERLYINGS: { ticker: string; name: string; kind: "Stock" | "ETF"; sector: string }[] = [
@@ -25,10 +26,11 @@ export const UNDERLYINGS: { ticker: string; name: string; kind: "Stock" | "ETF";
   { ticker: "GLD", name: "SPDR Gold Trust", kind: "ETF", sector: "Commodity" },
 ];
 
-export const ISSUERS: Record<IssuerId, { name: string; entity: string; structure: string; docs: string; por: string; eligibility: string; tag: string }> = {
-  xstocks: { name: "xStocks", entity: "Backed Assets (JE) Ltd", tag: "xstocks", structure: "1:1 collateralised by shares at regulated custodians, bankruptcy-remote", docs: "https://docs.xstocks.fi/docs/frequently-asked-questions", por: "https://xstocks.fi", eligibility: "Not for US persons; excluded: US, UK, CA, AU, sanctioned" },
-  ondo: { name: "Ondo Stocks", entity: "Ondo Global Markets (BVI) Ltd", tag: "ondo", structure: "Tokenised exposure, RFQ/JIT liquidity, USDC-quoted", docs: "https://docs.ondo.finance/ondo-stocks/eligibility", por: "https://ondo.finance", eligibility: "Reg S, no US/CA; EEA, UK, HK, SG, CH professional only" },
+export const ISSUERS: Record<IssuerId, { name: string; entity: string; structure: string; docs: string; por: string; eligibility: string; tag: string; notes2026?: string }> = {
+  xstocks: { name: "xStocks", entity: "Backed Assets (JE) Ltd", tag: "xstocks", structure: "1:1 collateralised by shares at regulated custodians, bankruptcy-remote", docs: "https://docs.xstocks.fi/docs/frequently-asked-questions", por: "https://xstocks.fi", eligibility: "Not for US persons; excluded: US, UK, CA, AU, sanctioned", notes2026: "Primary free reference via issuer API × multiplier" },
+  ondo: { name: "Ondo Stocks", entity: "Ondo Global Markets (BVI) Ltd", tag: "ondo", structure: "Tokenised exposure, RFQ/JIT liquidity, USDC-quoted", docs: "https://docs.ondo.finance/ondo-stocks/eligibility", por: "https://ondo.finance", eligibility: "Reg S, no US/CA; EEA, UK, HK, SG, CH professional only", notes2026: "Chainlink official oracle; in-kind conversion via Alpaca" },
   backpack: { name: "Backpack", entity: "Backpack Securities", tag: "backpack", structure: "1:1 by shares held at Backpack Securities", docs: "https://docs.jup.ag/user-docs/trade/spot/tokenized-stocks", por: "https://backpack.exchange", eligibility: "Per issuer terms" },
+  securitize: { name: "Securitize Stocks", entity: "Securitize Markets, LLC", tag: "securitize", structure: "1:1-backed security entitlements (SEC-registered)", docs: "https://securitize.io", por: "https://securitize.io", eligibility: "Regulated onboarding; eligibility varies", notes2026: "Launched Oct 2026 on Solana with Jump + Jupiter; 12 equities" },
 };
 
 /** Issuer trading-hours notes (from issuer docs, see SPEC §1.2). On-chain DEX liquidity itself is always on. */
@@ -38,7 +40,7 @@ export const issuerHours = (issuer: IssuerId, ticker: string): "24/7" | "24/5" |
 
 export type StrategyId = "dca" | "grid" | "trend" | "rebalance";
 export const STRATEGIES: { id: StrategyId; name: string; blurb: string; fit: string; tier: string; native: string; risks: string }[] = [
-  { id: "dca", name: "Smart DCA", blurb: "Buy a fixed USDC amount on a schedule. Buys more on dips below the EMA, skips above your cap.", fit: "Long-term accumulation", tier: "All passes", native: "Jupiter DCA available", risks: "Keeps buying in a sustained downtrend; off-hours premium." },
+  { id: "dca", name: "Smart DCA", blurb: "Buy a fixed USDC amount on a schedule. Buys more on dips below the EMA, skips above your cap.", fit: "Long-term accumulation", tier: "All passes", native: "Jupiter Trigger V2 or Sovereign keeper", risks: "Keeps buying in a sustained downtrend; off-hours premium." },
   { id: "grid", name: "Grid", blurb: "Ladder buys and sells across a price range and earn each grid step in sideways markets.", fit: "Sideways markets", tier: "Pilot+", native: "Jupiter limit ladder available", risks: "Breakouts strand inventory; tight grids get eaten by fees." },
   { id: "trend", name: "Trend (EMA cross)", blurb: "Go long when the fast EMA crosses above the slow EMA; exit to USDC on the reverse or a trailing stop.", fit: "Trending markets", tier: "Pilot+", native: "Exits only (OCO)", risks: "Whipsaw in choppy markets; lag." },
   { id: "rebalance", name: "Rebalancing", blurb: "Hold target weights and rebalance when drift exceeds your threshold, with an optional mean-reversion overlay.", fit: "Multi-asset portfolios", tier: "All (2 assets on Scout)", native: "Sovereign Mode only", risks: "Fees in volatile markets; liquidity differs by issuer." },

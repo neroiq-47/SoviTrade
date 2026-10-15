@@ -1,0 +1,12 @@
+{
+  "name": "shots-tool",
+  "version": "1.0.0",
+  "description": "Playwright screenshot tool for SoviTrade",
+  "main": "shoot.mjs",
+  "scripts": {
+    "shoot": "node shoot.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.64.1"
+  }
+}

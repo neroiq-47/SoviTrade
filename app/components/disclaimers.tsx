@@ -7,8 +7,8 @@ export function GeoNotice() {
     Not available to US persons or residents of the UK, Canada, Australia, Switzerland or sanctioned regions. Tokenised stocks are not shares.
   </div>;
 }
-export function RiskDisclaimer({ compact }: { compact?: boolean }) {
-  return <p className={compact ? "text-xs text-muted" : "text-sm text-muted"}>
+export function RiskDisclaimer({ compact, className }: { compact?: boolean; className?: string }) {
+  return <p className={compact ? `text-xs text-muted ${className ?? ""}` : `text-sm text-muted ${className ?? ""}`}>
     Nothing on SoviTrade is investment, legal or tax advice. Past performance is not indicative of future results. You can lose money. Bots can fail. Keep your keys.
   </p>;
 }

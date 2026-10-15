@@ -55,7 +55,44 @@ export function useRpcLatency() {
 }
 
 export function useWalletHoldings(address: string | null, markets: MarketRow[] | null) {
-  const [holdings] = useState<{ mint: string; amount: number; value: number | null; isStock: boolean }[]>([]);
-  // Placeholder: real balance fetch via RPC would go here
-  return { holdings, loading: false, error: null as string | null };
+  const [holdings, setHoldings] = useState<{ mint: string; amount: number; value: number | null; isStock: boolean }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!address) { setHoldings([]); setError(null); return; }
+    let alive = true;
+    setLoading(true);
+    const programs = ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"];
+    Promise.all(programs.map((programId) => fetch("/api/rpc", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTokenAccountsByOwner", params: [address, { programId }, { encoding: "jsonParsed" }] }),
+    }).then(async (r) => {
+      const j = await r.json();
+      if (!r.ok || j.error) throw new Error(j.error?.message || "RPC failed");
+      return (j.result?.value ?? []) as { account?: { data?: { parsed?: { info?: { mint?: string; tokenAmount?: { uiAmount?: number | null } } } } } }[];
+    }))).then((groups) => {
+      if (!alive) return;
+      const priceByMint = new Map<string, { price: number | null; stock: boolean }>();
+      for (const row of markets ?? []) {
+        for (const listing of row.listings) priceByMint.set(listing.mint, { price: listing.price, stock: true });
+      }
+      const rows = groups.flat().map((item) => {
+        const info = item.account?.data?.parsed?.info;
+        const mint = info?.mint ?? "";
+        const amount = info?.tokenAmount?.uiAmount ?? 0;
+        const known = priceByMint.get(mint);
+        return { mint, amount, value: known?.price != null ? amount * known.price : null, isStock: Boolean(known?.stock) };
+      }).filter((row) => row.mint && row.amount > 0);
+      setHoldings(rows);
+      setError(null);
+      setLoading(false);
+    }).catch((e: Error) => {
+      if (!alive) return;
+      setError(e.message);
+      setLoading(false);
+    });
+    return () => { alive = false; };
+  }, [address, markets]);
+  return { holdings, loading, error };
 }

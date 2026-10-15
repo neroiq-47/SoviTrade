@@ -3,16 +3,27 @@ import "server-only";
 /**
  * Full Jupiter Trigger V2 flow for optional Jupiter-native mode.
  * Auth (challenge-response JWT) + vault + deposit/craft + create DCA.
- * Vault is custodial (Privy) — label clearly.
+ * Vault is custodial (Privy) — label clearly. Not used by Sovereign Mode.
  */
 
 const BASE = "https://api.jup.ag/trigger/v2";
-const API_KEY = process.env.JUPITER_API_KEY!;
+
+function apiKey(): string {
+  const key = process.env.JUPITER_API_KEY;
+  if (!key) throw new Error("JUPITER_API_KEY required for Trigger V2");
+  return key;
+}
+
+function headers(token?: string): HeadersInit {
+  const h: Record<string, string> = { "Content-Type": "application/json", "x-api-key": apiKey() };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+}
 
 export async function getChallenge(walletPubkey: string): Promise<{ challenge: string }> {
   const r = await fetch(`${BASE}/auth/challenge`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+    headers: headers(),
     body: JSON.stringify({ walletPubkey, type: "message" }),
   });
   if (!r.ok) throw new Error(`challenge ${r.status}`);
@@ -22,7 +33,7 @@ export async function getChallenge(walletPubkey: string): Promise<{ challenge: s
 export async function verifyChallenge(walletPubkey: string, signature: string): Promise<{ accessToken: string }> {
   const r = await fetch(`${BASE}/auth/verify`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+    headers: headers(),
     body: JSON.stringify({ type: "message", walletPubkey, signature, authMode: "access_refresh" }),
   });
   if (!r.ok) throw new Error(`verify ${r.status}`);
@@ -34,15 +45,11 @@ export async function craftDeposit(token: string, params: {
 }) {
   const r = await fetch(`${BASE}/deposit/craft`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY,
-      Authorization: `Bearer ${token}`,
-    },
+    headers: headers(token),
     body: JSON.stringify(params),
   });
   if (!r.ok) throw new Error(`craft ${r.status}`);
-  return r.json(); // { transaction, requestId, ... }
+  return r.json();
 }
 
 export async function createDca(token: string, body: {
@@ -58,11 +65,7 @@ export async function createDca(token: string, body: {
 }) {
   const r = await fetch(`${BASE}/orders/dca`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY,
-      Authorization: `Bearer ${token}`,
-    },
+    headers: headers(token),
     body: JSON.stringify(body),
   });
   if (!r.ok) throw new Error(`create DCA ${r.status}`);

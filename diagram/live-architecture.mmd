@@ -1,0 +1,8 @@
+%% SoviTrade live architecture (mermaid)
+graph TD
+  User[User Wallet] --> App[Next.js App]
+  App --> Jupiter[Jupiter APIs]
+  App --> Pyth[Pyth Hermes]
+  App --> Gecko[GeckoTerminal]
+  Keeper[Cloudflare Worker Keeper] --> DO[Durable Objects]
+  DO --> Swig[Swig Smart Wallet]

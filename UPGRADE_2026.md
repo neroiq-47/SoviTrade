@@ -1,29 +1,24 @@
 # SoviTrade — 2026 Trading Upgrade Plan
-**Date:** 15 Oct 2026 · **Status:** Planning + initial code stubs
+**Date:** 15 Oct 2026 · **Status:** Live-trading skeleton implemented
 
-## Market context (Oct 2026)
-- Tokenized US stocks ~$3B+ onchain value, 395% YoY growth.
-- Leading issuers: Ondo, xStocks (Backed), bStocks; new Securitize Stocks on Solana (12 equities, 1:1-backed).
-- SEC Innovation Exemption (Sep 2026) for approved venues.
-- Ondo expanded 24/7 on selected assets; xStocks 24/5+ selected.
+## Implemented (this session)
+- `app/lib/swig-grant.ts` — Session grant preparation (keypair + instructions outline)
+- `app/lib/server/keeper.ts` — Per-bot Durable Object evaluation + tick skeleton
+- `app/lib/server/jupiter-trigger-full.ts` — Full Trigger V2 auth, deposit/craft, DCA create
+- `app/lib/server/risk-engine.ts` — Guardrail checks (position, daily loss, drawdown, slippage, deviation)
+- Oracle deviation, config updates, Swig types (previous)
 
-## Architecture upgrades
-1. **Sovereign Mode (default)** — Swig smart wallet + time-limited capped session keys (Ed25519 or secp256k1). Keeper on Cloudflare Workers + Durable Objects. Fully non-custodial.
-2. **Jupiter-native mode (opt-in)** — Jupiter Trigger V2 DCA (time_based or price_conditional) and limit/OCO. Vault-based (Privy). Clearly labelled third-party custody.
-3. **Oracle deviation** — Primary: xStocks issuer quote × multiplier vs Jupiter usdPrice. Secondary: Chainlink Tokenized Equity Feeds (multiplier-aware, 24/5) or Pyth (Nasdaq Basic distributor, paid for live prices).
-4. **Strategies** — Beta: Smart DCA + Rebalancing. Grid/Trend later (need sub-minute reaction).
+## Remaining for true live trading
+1. Integrate `@swig-wallet/classic` (or kit) and actually build/sign create-session + sign transactions.
+2. Deploy Cloudflare Worker + Durable Object that calls `keeperTick` and executes swaps via session key.
+3. Wire bot wizard to call `prepareSessionGrant` and present the transaction for user signature.
+4. Store encrypted session key material securely (Workers Secret + envelope).
+5. Add Jupiter Swap API quote + build for Sovereign Mode execution (non-vault).
+6. On-chain confirmation, idempotency, and kill-switch revocation path.
+7. Monitoring (Sentry + alerts) and dry-run mode.
 
-## Immediate code additions (this commit)
-- Expanded issuer notes + Securitize awareness in config.
-- Jupiter Trigger V2 DCA types and client stub.
-- Swig session-key helper types and grant flow outline.
-- Oracle deviation calculator (xStocks × mult vs Jupiter).
+## Dual path
+- **Sovereign (default):** Swig session + own keeper + Jupiter Swap. Non-custodial.
+- **Jupiter-native (opt-in):** Trigger V2 vault + DCA/limit. Labelled third-party.
 
-## Next implementation steps
-1. Wire Swig session grant UI in bot wizard (Sovereign Mode).
-2. Implement keeper Durable Object skeleton (Cloudflare).
-3. Add Chainlink / Pyth feed resolution for deviation checks.
-4. Optional Trigger V2 deposit flow for Jupiter mode.
-5. Expand allow-list for Securitize listings once live on Jupiter.
-
-Not investment advice. Eligibility and custody rules remain issuer- and jurisdiction-dependent.
+Live trading is not yet production-ready; the skeleton is in place for the next engineering sprint.

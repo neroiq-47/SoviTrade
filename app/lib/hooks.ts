@@ -1,9 +1,10 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { MarketRow } from "@/lib/server/jupiter";
 import type { Candle } from "@/lib/server/gecko";
 import type { OracleData } from "@/lib/server/pyth";
-import { usSession } from "@/lib/nyse";
+import { session as usSession } from "@/lib/nyse";
+import { SOL_MINT } from "@/lib/config";
 
 export type Remote<T> = { data: T | null; error: string | null; loading: boolean; updatedAt: number | null };
 
@@ -23,7 +24,7 @@ export function useRemote<T>(url: string | null, refreshMs = 0, pick: (j: any) =
 export const useMarkets = () => useRemote<MarketRow[]>("/api/markets", 30000, (j) => j.rows);
 export const useCandles = (mint: string | null, tf: "hour" | "day" = "hour") => useRemote<{ candles: Candle[] }>(mint ? `/api/chart?mint=${mint}&tf=${tf}` : null, 60000, (j) => j);
 export const useOracle = (ticker: string | null) => useRemote<OracleData>(ticker ? `/api/oracle?ticker=${ticker}` : null, 60000);
-export const useSolPrice = () => useRemote<number>("/api/prices?ids=So11111111111111111111111111111111111111112", 30000, (j) => j.prices?.So11111111111111111111111111111111111111112?.usdPrice ?? null);
+export const useSolPrice = () => useRemote<number>(`/api/prices?ids=${SOL_MINT}`, 30000, (j) => j.prices?.[SOL_MINT]?.usdPrice ?? null);
 
 export function useSession() {
   const [s, setS] = useState<{ label: string; tone: "gain" | "ember"; detail: string } | null>(null);
@@ -43,7 +44,7 @@ export function useRpcLatency() {
     const run = async () => {
       const t = performance.now();
       try {
-        const r = await fetch("/api/rpc", { method: "POST", body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot", params: [] }) });
+        const r = await fetch("/api/rpc", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot", params: [] }) });
         if (!r.ok) throw new Error();
         setMs(Math.round(performance.now() - t));
       } catch { setMs("err"); }
@@ -54,7 +55,7 @@ export function useRpcLatency() {
 }
 
 export function useWalletHoldings(address: string | null, markets: MarketRow[] | null) {
-  const [holdings, setHoldings] = useState<{ mint: string; amount: number; value: number | null; isStock: boolean }[]>([]);
+  const [holdings] = useState<{ mint: string; amount: number; value: number | null; isStock: boolean }[]>([]);
   // Placeholder: real balance fetch via RPC would go here
   return { holdings, loading: false, error: null as string | null };
 }

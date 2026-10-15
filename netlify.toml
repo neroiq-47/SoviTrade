@@ -1,0 +1,10 @@
+# Next.js app lives in app/. Netlify installs the Next runtime automatically.
+# Do not put secrets in this file. Dry-run is set as a site env var.
+[build]
+  base = "app"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  KEEPER_DRY_RUN = "true"
